@@ -1,12 +1,23 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NoticesAPI.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen()
+    .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+var connectionStr = builder.Configuration
+    .GetConnectionString("BloggingConnection");
+
+builder.Services
+    .AddDbContext<AppDbContext>(opts => opts
+    .UseMySql(connectionStr, ServerVersion
+    .AutoDetect(connectionStr)));
 
 var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 var key = Encoding.ASCII.GetBytes(secretKey!);
