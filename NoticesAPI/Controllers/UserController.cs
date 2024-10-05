@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using News.API.Models;
+using News.API.Services;
 using NoticesAPI.Data;
 using NoticesAPI.Data.DTOs;
 using NoticesAPI.Models;

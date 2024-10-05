@@ -11,5 +11,4 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<NewsItem> NewsItems { get; set; }
-    public DbSet<UserPreferences> UserPreferences { get; set; }
 }

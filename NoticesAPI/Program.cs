@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using News.API.Services;
 using NoticesAPI.Data;
 using System.Text;
 
@@ -8,8 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen()
-    .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddSwaggerGen().AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<INewsService, NewsService>();
+
 
 var connectionStr = builder.Configuration
     .GetConnectionString("BloggingConnection");
@@ -37,6 +40,9 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false,
     };
 });
+
+builder.Services.AddScoped<INewsService, NewsService>();
+
 
 var app = builder.Build();
 
