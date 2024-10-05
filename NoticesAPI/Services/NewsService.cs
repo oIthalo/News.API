@@ -3,7 +3,6 @@ using News.API.Data.DTOs;
 using News.API.Models;
 using System.Net.Http.Headers;
 using System.Text.Json;
-
 namespace News.API.Services;
 
 public class NewsService : INewsService
@@ -51,14 +50,42 @@ public class NewsService : INewsService
     {
         var response = await _httpClient.GetAsync($"everything?q={query}&apiKey={ApiKey}");
         var responseBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(responseBody);
 
         if (response.IsSuccessStatusCode)
         {
-            var news = JsonSerializer.Deserialize<NewsItemResponseResume>(responseBody);
-            return news?.Items ?? new List<NewsItemResume>();
+            var news = JsonSerializer.Deserialize<NewsItemResponse>(responseBody);
+            var resumedNews = _mapper.Map<List<NewsItemResume>>(news?.Items);
+            return resumedNews ?? new List<NewsItemResume>();
         }
+        throw new Exception($"Error: {response.StatusCode}, {responseBody}");
+    }
 
-        throw new Exception($"Erro: {response.StatusCode}, {responseBody}");
+    public async Task<List<NewsItem>> GetNewsByCategory(string category)
+    {
+        var response = await _httpClient.GetAsync($"top-headlines?country=us&category={category}&apiKey={ApiKey}");
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            var news = JsonSerializer.Deserialize<NewsItemResponse>(responseBody);
+            return news?.Items ?? new List<NewsItem>();
+        }
+        throw new Exception($"Error: {response.StatusCode}, {responseBody}");
+    }
+
+    public async Task<List<NewsItem>> GetPopularNews(int limit = 50)
+    {
+        if (limit <= 0)
+            throw new Exception("Limite deve ser maio que zero");
+
+        var response = await _httpClient.GetAsync($"top-headlines?country=us&pageSize={limit}&apiKey={ApiKey}");
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            var news = JsonSerializer.Deserialize<NewsItemResponse>(responseBody);
+            return news?.Items ?? new List<NewsItem>();
+        }
+        throw new Exception($"Error: {response.StatusCode}, {responseBody}");
     }
 }
